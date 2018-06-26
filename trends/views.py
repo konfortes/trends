@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import  status
 from trends.models import Keyword
 from trends.serializers import KeywordSerializer
 
-@api_view(['GET'])
-def stam(request):
-    return Response('Hey!')
-
-
-@api_view(['GET'])
+# curl -X POST 'localhost:8000/trends/api/v1/keywords'
+# curl -X POST -H "Content-Type: application/json" -d '{"name": "Russia"}' 'localhost:8000/trends/api/v1/keywords/'
+@api_view(['GET', 'POST'])
 def keywords_collection(request):
     if request.method == 'GET':
         keywords = Keyword.objects.all()
         serializer = KeywordSerializer(keywords, many=True)
         return Response(serializer.data)
+    elif request.method == 'POST':
+        data = request.data
+        serializer = KeywordSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# curl -X POST 'localhost:8000/trends/api/v1/keywords/1'
 @api_view(['GET'])
 def keyword_element(request, pk):
     try:
