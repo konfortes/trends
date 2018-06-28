@@ -1,19 +1,39 @@
-"""
-Example program for the Stream API. This prints public status messages
-from the "sample" stream as fast as possible. Use -h for help.
-"""
-
 from __future__ import print_function
-
-# import argparse
-
 from twitter.stream import TwitterStream, Timeout, HeartbeatTimeout, Hangup
 from twitter.oauth import OAuth
 from twitter.util import printNicely
+import psycopg2
+
+class DB:
+    def __init__(self, connection_string, driver):
+        self.connection = driver.connect(connection_string)
+        self.cursor = self.connection.cursor()
+
+        
 
 def main():
-    keywords = "russia,trump"
+    try:
+        # TODO: from config
+        conn_string = "host='localhost' dbname='trends' user='trends_user' password='password'"
+        db = DB(conn_string, psycopg2)
 
+        
+        track_keywords = keywords_to_track(db)
+        stream_iterator = get_stream_iterator(track_keywords)
+        collect_trends(stream_iterator, increment_trend_scores, db)
+    except StandardError as err:
+        print(err)
+    finally:
+        db.cursor.close()
+        db.connection.close()
+
+def keywords_to_track(db):
+    db.cursor.execute("select name from trends_keyword where is_active = true")
+    rows = db.cursor.fetchall()
+    return ",".join(map(lambda k: k[0], rows))
+    
+def get_stream_iterator(track_keywords):
+    # TODO: from config
     args = {
         'token': "1010873339819196416-3yDJVTlPLOyptBjx8DAeB9feAXSpJp",
         'token_secret': "i2ddWam867Y1wWYxvC0b4KcYViZuQ36hDoHkYNm8CCUko",
@@ -21,14 +41,12 @@ def main():
         'consumer_secret': "nZOjyOuzBjgUgEzygK4zU3T6PiI4MnTLdHSm1Y2JuHiVW00Hfv",
         'timeout': 8000,
         'heartbeat_timeout': 3000,
-        'track_keywords': keywords,
+        'track_keywords': track_keywords,
         'no_block': True
     }
 
-    # When using twitter stream you must authorize.
     auth = OAuth(args['token'], args['token_secret'], args['consumer_key'], args['consumer_secret'])
 
-    # These arguments are optional:
     stream_args = dict(
         timeout = args['timeout'],
         block = not args['no_block'],
@@ -43,11 +61,11 @@ def main():
         tweet_iter = stream.statuses.filter(**query_args)
     else:
         tweet_iter = stream.statuses.sample()
+    
+    return tweet_iter
 
-    # Iterate over the sample stream.
-    for tweet in tweet_iter:
-        # You must test that your tweet has text. It might be a delete
-        # or data message.
+def collect_trends(iterator, collect_function, db):
+    for tweet in iterator:
         if tweet is None:
             printNicely("-- None --")
         elif tweet is Timeout:
@@ -57,9 +75,22 @@ def main():
         elif tweet is Hangup:
             printNicely("-- Hangup --")
         elif tweet.get('entities', {}).get('hashtags'):
-            print(map(lambda h: h['text'], tweet['entities']['hashtags']))
-        # else:
-            # printNicely("-- Some data: " + str(tweet))
+            collect_function(db, map(lambda h: h['text'], tweet['entities']['hashtags']))
+
+# TODO: optimize
+def increment_trend_scores(db, trends = []):
+    update_sql = "UPDATE trends_trend SET score = score+1 WHERE name = %s"
+    insert_sql = "INSERT INTO trends_trend (name, score) VALUES(%s, 1)"
+
+    for trend in trends:
+        try:
+            db.cursor.execute(update_sql, (trend,))
+            if db.cursor.rowcount == 0:
+                db.cursor.execute(insert_sql, (trend,))
+        except StandardError as err:
+            print(err)
+
+    db.connection.commit()
 
 if __name__ == '__main__':
     main()

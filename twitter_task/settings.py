@@ -75,10 +75,19 @@ WSGI_APPLICATION = 'twitter_task.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# trends_user:password
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'trends',
+        'USER': 'trends_user',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
