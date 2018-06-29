@@ -2,6 +2,7 @@ from __future__ import print_function
 from twitter.stream import TwitterStream, Timeout, HeartbeatTimeout, Hangup
 from twitter.oauth import OAuth
 from twitter.util import printNicely
+from datetime import datetime
 import psycopg2
 
 class DB:
@@ -79,18 +80,18 @@ def collect_trends(iterator, collect_function, db):
 
 # TODO: optimize
 def increment_trend_scores(db, trends = []):
-    update_sql = "UPDATE trends_trend SET score = score+1 WHERE name = %s"
-    insert_sql = "INSERT INTO trends_trend (name, score) VALUES(%s, 1)"
+    update_sql = "UPDATE trends_trend SET score = score+1, last_spotted_at=%s WHERE name = %s"
+    insert_sql = "INSERT INTO trends_trend (name, score, last_spotted_at) VALUES(%s, 1, %s)"
 
-    for trend in trends:
-        try:
-            db.cursor.execute(update_sql, (trend,))
+    try:
+        for trend in trends:
+            db.cursor.execute(update_sql, (datetime.now(), trend,))
             if db.cursor.rowcount == 0:
-                db.cursor.execute(insert_sql, (trend,))
-        except StandardError as err:
-            print(err)
+                db.cursor.execute(insert_sql, (trend, datetime.now(),))
 
-    db.connection.commit()
+        db.connection.commit()
+    except StandardError as err:
+            print(err)
 
 if __name__ == '__main__':
     main()
