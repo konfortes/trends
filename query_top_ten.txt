@@ -5,3 +5,5 @@ t = now - datetime.timedelta(days=days_setting)
 
 select_query = SELECT name, score FROM trends_trend ORDER BY score DESC LIMIT(10) WHERE last_spotted_at > %s
 .execute(select_query, (t))
+
+Trend.objects.filter('last_spotted_at > %s', (t,)).order_by('-score')
