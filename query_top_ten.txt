@@ -1,0 +1,7 @@
+import datetime
+now = datetime.datetime.now()
+days_setting = 7
+t = now - datetime.timedelta(days=days_setting)
+
+select_query = SELECT name, score FROM trends_trend ORDER BY score DESC LIMIT(10) WHERE last_spotted_at > %s
+.execute(select_query, (t))
