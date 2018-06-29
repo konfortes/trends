@@ -13,3 +13,9 @@ class Trend(models.Model):
     score = models.IntegerField(default=1, null=False)
     last_spotted_at = models.DateTimeField(default=datetime.now)
     
+    class Meta:
+        indexes = [
+            # cover index, descending score
+            models.Index(fields=['-score', 'last_spotted_at', 'name'])
+        ]
+    
