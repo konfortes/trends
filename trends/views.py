@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-# from django.shortcuts import render
+import datetime
+from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import  status
-from trends.models import Keyword
-from trends.serializers import KeywordSerializer
+from trends.models import Keyword, Trend
+from trends.serializers import KeywordSerializer, TrendSerializer
 
-# curl -X POST 'localhost:8000/trends/api/v1/keywords'
+# curl 'localhost:8000/trends/api/v1/keywords'
 # curl -X POST -H "Content-Type: application/json" -d '{"name": "Russia"}' 'localhost:8000/trends/api/v1/keywords/'
 @api_view(['GET', 'POST'])
 def keywords_collection(request):
@@ -25,7 +25,7 @@ def keywords_collection(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# curl -X POST 'localhost:8000/trends/api/v1/keywords/1'
+# curl 'localhost:8000/trends/api/v1/keywords/1'
 @api_view(['GET'])
 def keyword_element(request, pk):
     try:
@@ -36,3 +36,17 @@ def keyword_element(request, pk):
     if request.method == 'GET':
         serializer = KeywordSerializer(keyword)
         return Response(serializer.data)
+
+# curl 'localhost:8000/trends/api/v1/trends'
+@api_view(['GET'])
+def trends(request):
+    # TODO: caching
+    now = datetime.datetime.now()
+    # TODO: setting
+    outdated_threshold_setting = 7
+    outdated_threshold = now - datetime.timedelta(days=outdated_threshold_setting)
+    
+    # queryset = Trend.objects.filter('last_spotted_at > %s', (outdated_threshold,)).order_by('-score')
+    queryset = Trend.objects.filter(last_spotted_at__range=[outdated_threshold, now]).order_by('-score')
+    serializer = TrendSerializer(queryset, many=True)
+    return Response(serializer.data)
