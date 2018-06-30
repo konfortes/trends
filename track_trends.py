@@ -18,7 +18,6 @@ def main():
         conn_string = "host='localhost' dbname='trends' user='trends_user' password='password'"
         db = DB(conn_string, psycopg2)
 
-        
         track_keywords = keywords_to_track(db)
         stream_iterator = get_stream_iterator(track_keywords)
         collect_trends(stream_iterator, increment_trend_scores, db)
@@ -29,7 +28,7 @@ def main():
         db.connection.close()
 
 def keywords_to_track(db):
-    db.cursor.execute("select name from trends_keyword where is_active = true")
+    db.cursor.execute("SELECT name FROM trends_keyword WHERE is_active = true")
     rows = db.cursor.fetchall()
     return ",".join(map(lambda k: k[0], rows))
     
