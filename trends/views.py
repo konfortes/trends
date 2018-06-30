@@ -46,7 +46,6 @@ def trends(request):
     outdated_threshold_setting = 7
     outdated_threshold = now - datetime.timedelta(days=outdated_threshold_setting)
     
-    # queryset = Trend.objects.filter('last_spotted_at > %s', (outdated_threshold,)).order_by('-score')
-    queryset = Trend.objects.filter(last_spotted_at__range=[outdated_threshold, now]).order_by('-score')
+    queryset = Trend.objects.filter(last_spotted_at__range=[outdated_threshold, now]).order_by('-score')[:10]
     serializer = TrendSerializer(queryset, many=True)
     return Response(serializer.data)
