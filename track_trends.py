@@ -4,13 +4,12 @@ from twitter.oauth import OAuth
 from twitter.util import printNicely
 from datetime import datetime
 import psycopg2
+import sys
 
 class DB:
     def __init__(self, connection_string, driver):
         self.connection = driver.connect(connection_string)
         self.cursor = self.connection.cursor()
-
-        
 
 def main():
     try:
@@ -18,7 +17,7 @@ def main():
         conn_string = "host='localhost' dbname='trends' user='trends_user' password='password'"
         db = DB(conn_string, psycopg2)
 
-        track_keywords = keywords_to_track(db)
+        track_keywords = ",".join(sys.argv[1:])
         stream_iterator = get_stream_iterator(track_keywords)
         collect_trends(stream_iterator, increment_trend_scores, db)
     except StandardError as err:
@@ -27,10 +26,10 @@ def main():
         db.cursor.close()
         db.connection.close()
 
-def keywords_to_track(db):
-    db.cursor.execute("SELECT name FROM trends_keyword WHERE is_active = true")
-    rows = db.cursor.fetchall()
-    return ",".join(map(lambda k: k[0], rows))
+# def keywords_to_track(db):
+#     db.cursor.execute("SELECT name FROM trends_keyword WHERE is_active = true")
+#     rows = db.cursor.fetchall()
+#     return ",".join(map(lambda k: k[0], rows))
     
 def get_stream_iterator(track_keywords):
     # TODO: from config
