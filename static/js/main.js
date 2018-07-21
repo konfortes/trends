@@ -10,7 +10,6 @@ function draw(){
     setTimeout(draw, 10000)
 }
 
-
 function handleResponse(response) {
     return {
         labels: response.data.map(t => t.name),

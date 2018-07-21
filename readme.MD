@@ -12,4 +12,4 @@ python manage.py makemigrations
 python manage.py migrate
 python track_trends.py
 python manage.py runserver
-http://127.0.0.1:8000/
+http://127.0.0.1:8000/static/index.html

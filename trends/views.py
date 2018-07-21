@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import datetime
+import subprocess
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -48,3 +49,14 @@ def trends(request):
     queryset = Trend.objects.filter(last_spotted_at__range=[outdated_threshold, now]).order_by('-score')[:10]
     serializer = TrendSerializer(queryset, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def track_keywords(request):
+    keywords = request.data['keywords']
+    command = ['python', 'track_trends.py', '-d']
+
+    p = subprocess.Popen((command + keywords), shell=True)
+    # p.kill()
+    
+    return Response('start tracking - process:' + str(p.pid))
+
