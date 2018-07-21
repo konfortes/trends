@@ -53,7 +53,7 @@ def trends(request):
 @api_view(['POST'])
 def track_keywords(request):
     keywords = request.data['keywords']
-    command = ['python', 'track_trends.py', '-d']
+    command = ['python', 'track_trends.py']
 
     p = subprocess.Popen((command + keywords), shell=True)
     # p.kill()

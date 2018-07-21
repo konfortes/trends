@@ -2,7 +2,26 @@ html, body {
     height:100%;
 }
 
+.page-title{
+    padding-left: 5px;
+}
+
 .chart-container{
     width: 600px;
     height: 600px;
+}
+
+.control-panel{
+    padding-left: 10px;
+}
+
+.control-panel .keywords-container span{
+    display: inline-block;
+    margin-left: 3px;
+    background-color: grey;
+    border-radius: 50%;
+}
+
+.control-panel .bgroup{
+    margin-top: 10px;
 }

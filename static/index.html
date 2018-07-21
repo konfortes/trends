@@ -1,22 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
 </head>
-<body>
-    <h1>Top 10 Trends</h1>
 
-    <div class="chart-container">
-        <canvas id="myChart" width="400" height="400"></canvas>
+<body>
+    <h1 class="page-title">Top 10 Trends</h1>
+    <div id="app">
+        <div class="control-panel">
+            <input v-model="newKeyword">
+            <button v-on:click="addKeyword">Add keyword</button>
+            <div class="keywords-container">
+                <span class="keyword" v-for="k in keywords">{{ k }}</span>
+            </div>
+            <div class="bgroup">
+                <button v-on:click="clearKeywords" class="btn btn-danger">Clear keywords</button>
+                <button v-on:click="startTracking" class="btn btn-primary" v-bind:disabled="tracking">Start tracking</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
     </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="js/main.js"></script>
 
 </html>

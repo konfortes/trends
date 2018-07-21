@@ -1,13 +1,45 @@
-var ctx = document.getElementById("myChart").getContext('2d');
+var app = new Vue({
+    el: '#app',
+    data: function() {
+        return {
+            newKeyword: "",
+            keywords: [],
+            tracking: false
+        };
+    },
+    methods: {
+        addKeyword: function(event) {
+            if (this.newKeyword && this.newKeyword.length > 0) {
+                this.keywords.push(this.newKeyword);
+                this.newKeyword = "";
+            }
+        },
 
-draw();
+        clearKeywords: function(){
+            this.keywords = [];
+        }, 
 
-function draw(){
+        startTracking: function(){
+            axios.post('trends/api/v1/track_keywords', {keywords: this.keywords})
+                .then(()=> {
+                    this.tracking = true;
+                    var ctx = document.getElementById("myChart").getContext('2d');
+                    drawChart(ctx);
+                })
+            ;
+        }
+    }
+});
+
+
+function drawChart(ctx){
     axios.get('/trends/api/v1/trends')
         .then(handleResponse)
-        .then(initChart);
+        .then((chartData) => {
+            refreshChart(ctx, chartData);
+        });
 
-    setTimeout(draw, 10000)
+    setTimeout(drawChart, 10000)
 }
 
 function handleResponse(response) {
@@ -17,7 +49,7 @@ function handleResponse(response) {
     }
 }
 
-function initChart(data) {
+function refreshChart(ctx, data) {
     let myChart = new Chart(ctx, {
         type: 'bar',
         data: {
