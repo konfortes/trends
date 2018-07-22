@@ -15,11 +15,8 @@ html, body {
     padding-left: 10px;
 }
 
-.control-panel .keywords-container span{
-    display: inline-block;
+.control-panel .keywords-container .keyword{
     margin-left: 3px;
-    background-color: grey;
-    border-radius: 50%;
 }
 
 .control-panel .bgroup{

@@ -23,8 +23,12 @@ var app = new Vue({
             axios.post('trends/api/v1/track_keywords', {keywords: this.keywords})
                 .then(()=> {
                     this.tracking = true;
+                    toastr.info(`start tracking twitter stream for keywords: ${this.keywords.join(',')}`);
                     var ctx = document.getElementById("myChart").getContext('2d');
                     drawChart(ctx);
+                })
+                .catch((e) => {
+                    toastr.error(e);
                 })
             ;
         }

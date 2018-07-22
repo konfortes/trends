@@ -7,6 +7,7 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
 </head>
 
@@ -17,7 +18,7 @@
             <input v-model="newKeyword">
             <button v-on:click="addKeyword">Add keyword</button>
             <div class="keywords-container">
-                <span class="keyword" v-for="k in keywords">{{ k }}</span>
+                <span class="keyword badge badge-pill badge-info" v-for="k in keywords">{{ k }}</span>
             </div>
             <div class="bgroup">
                 <button v-on:click="clearKeywords" class="btn btn-danger">Clear keywords</button>
@@ -33,6 +34,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
 <script src="js/main.js"></script>
 
 </html>
